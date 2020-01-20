@@ -7,164 +7,102 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
+class Rol(models.Model):
+    idrol=models.AutoField(primary_key=True)
+    roltipo = models.CharField(max_length=10)
+    roldescripcion = models.CharField(max_length=50)
 
-class CuidadoMascota(models.Model):
-    idcuidado_mascota = models.IntegerField(db_column='idCuidado_Mascota', primary_key=True)  # Field name made lowercase.
-    cuidadopropietario = models.ForeignKey('Propietario', models.DO_NOTHING, db_column='cuidadoPropietario')  # Field name made lowercase.
-    fechacuidado = models.DateTimeField(db_column='fechaCuidado', blank=True, null=True)  # Field name made lowercase.
-    detallecuidado = models.CharField(db_column='detalleCuidado', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    likecuidado = models.IntegerField(db_column='likeCuidado', blank=True, null=True)  # Field name made lowercase.
+    def __str__(self):
+        return '%s: %s' % (self.id_rol, self.tipo)
 
-    class Meta:
-        managed = False
-        db_table = 'cuidado_mascota'
-        unique_together = (('idcuidado_mascota', 'cuidadopropietario'),)
+class Usuario(models.Model):
+    idusuario= models.AutoField(primary_key=True)
+    idrol= models.ForeignKey(Rol,on_delete=models.CASCADE)
+    usuariopassword= models.CharField(max_length=65)
+    usuarionombre= models.CharField(max_length=20)
+    usuarioapellido= models.CharField(max_length=20)
+    usuariomail= models.CharField(max_length=20)
+    usuariodireccion=models.CharField(max_length=80)
+    usuarionickname = models.CharField(max_length=20)
+    usuariofoto = models.CharField(max_length=300)
 
-
-class Local(models.Model):
-    idlocal = models.IntegerField(db_column='idLocal', primary_key=True)  # Field name made lowercase.
-    localdireccion = models.CharField(db_column='localDireccion', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    localtelefono = models.CharField(db_column='localTelefono', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    localmail = models.CharField(db_column='localMail', max_length=45, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'local'
-
-
-class Mascota(models.Model):
-    idmascota = models.IntegerField(db_column='idMascota', primary_key=True)  # Field name made lowercase.
-    nombremascota = models.CharField(db_column='nombreMascota', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    propietariomascota = models.ForeignKey('Propietario', models.DO_NOTHING, db_column='propietarioMascota')  # Field name made lowercase.
-    edadmascota = models.IntegerField(db_column='edadMascota', blank=True, null=True)  # Field name made lowercase.
-    razamascota = models.ForeignKey('Raza', models.DO_NOTHING, db_column='razaMascota')  # Field name made lowercase.
-    tipomascota = models.ForeignKey('TipoMascota', models.DO_NOTHING, db_column='tipoMascota')  # Field name made lowercase.
-    sexomascota = models.CharField(db_column='sexoMascota', max_length=10, blank=True, null=True)  # Field name made lowercase.
-    alimentacionmascota = models.CharField(db_column='alimentacionMascota', max_length=100, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'mascota'
-        unique_together = (('idmascota', 'razamascota', 'tipomascota', 'propietariomascota'),)
-
-
-class Persona(models.Model):
-    idpersona = models.IntegerField(db_column='idPersona', primary_key=True)  # Field name made lowercase.
-    usuariopersona = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='usuarioPersona')  # Field name made lowercase.
-    nombrepersona = models.CharField(db_column='nombrePersona', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    apellidopersona = models.CharField(db_column='apellidoPersona', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    direccionpersona = models.CharField(db_column='direccionPersona', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    mailpersona = models.CharField(db_column='mailPersona', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    generopersona = models.CharField(db_column='generoPersona', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    edadpersona = models.IntegerField(db_column='edadPersona', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'persona'
-        unique_together = (('idpersona', 'usuariopersona'),)
-
-
-class Planificacionvacuna(models.Model):
-    idplanificacionvacuna = models.IntegerField(db_column='idPlanificacionVacuna', primary_key=True)  # Field name made lowercase.
-    vacunamascota = models.ForeignKey(Mascota, models.DO_NOTHING, db_column='vacunaMascota')  # Field name made lowercase.
-    fechavacuna = models.DateTimeField(db_column='fechaVacuna')  # Field name made lowercase.
-    vacunaplanificacion = models.ForeignKey('Vacuna', models.DO_NOTHING, db_column='vacunaPlanificacion')  # Field name made lowercase.
-    dosisvacuna = models.DecimalField(db_column='dosisVacuna', max_digits=5, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-    descripcionplanificacion = models.CharField(db_column='descripcionPlanificacion', max_length=100, blank=True, null=True)  # Field name made lowercase.
-    aplicadavacuna = models.IntegerField(db_column='aplicadaVacuna', blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'planificacionvacuna'
-        unique_together = (('idplanificacionvacuna', 'vacunamascota', 'fechavacuna', 'vacunaplanificacion'),)
-
-
-class Propietario(models.Model):
-    idpropietario = models.IntegerField(db_column='idPropietario', primary_key=True)  # Field name made lowercase.
-    propetariopersona = models.ForeignKey(Persona, models.DO_NOTHING, db_column='propetarioPersona')  # Field name made lowercase.
-    numeromascotas = models.IntegerField(db_column='numeroMascotas')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'propietario'
-        unique_together = (('idpropietario', 'propetariopersona'),)
+    def __str__(self):
+        return '%s: %s %s %s' % (self.idusuario, self.usuarionickname, self.usuariomail, self.usuariofoto)
 
 
 class Raza(models.Model):
-    idraza = models.IntegerField(db_column='idRaza', primary_key=True)  # Field name made lowercase.
-    razanombre = models.CharField(db_column='razaNombre', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    razadescripcion = models.CharField(db_column='razaDescripcion', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    idraza = models.AutoField(primary_key=True)
+    razanombre = models.CharField(max_length=30)
+    razadescripcion = models.CharField(max_length=100)
 
-    class Meta:
-        managed = False
-        db_table = 'raza'
-
-
-class Recomendarlugar(models.Model):
-    idrecomendarlugar = models.IntegerField(db_column='idRecomendarLugar', primary_key=True)  # Field name made lowercase.
-    recomendacionlocal = models.ForeignKey('Local', models.DO_NOTHING, db_column='recomendacionLocal')  # Field name made lowercase.
-    recomendacionpropietario = models.ForeignKey(Propietario, models.DO_NOTHING, db_column='recomendacionPropietario')  # Field name made lowercase.
-    recomendacionfecha = models.DateTimeField(db_column='recomendacionFecha', blank=True, null=True)  # Field name made lowercase.
-    recomnedacionlike = models.IntegerField(db_column='recomnedacionLike', blank=True, null=True)  # Field name made lowercase.
-    recomendaciondescripcion = models.CharField(db_column='recomendacionDescripcion', max_length=100, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'recomendarlugar'
-        unique_together = (('idrecomendarlugar', 'recomendacionpropietario', 'recomendacionlocal'),)
+    def __str__(self):
+        return '%s: %s %s' % (self.idraza, self.razanombre, self.razadescripcion)
 
 
 class TipoMascota(models.Model):
-    idtipo = models.IntegerField(db_column='idTipo', primary_key=True)  # Field name made lowercase.
-    nombretipo = models.CharField(db_column='nombreTipo', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    descripciontipo = models.CharField(db_column='descripcionTipo', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    idtipo = models.AutoField(primary_key=True)
+    tiponombre = models.CharField(max_length=30)
+    tipodescripcion = models.CharField(max_length=100)
 
-    class Meta:
-        managed = False
-        db_table = 'tipo_mascota'
-
-
-class Usuario(models.Model):
-    idusuario = models.IntegerField(db_column='idUsuario', primary_key=True)  # Field name made lowercase.
-    user = models.CharField(max_length=45, blank=True, null=True)
-    pass_field = models.CharField(db_column='pass', max_length=65, blank=True, null=True)  # Field renamed because it was a Python reserved word.
-
-    class Meta:
-        managed = False
-        db_table = 'usuario'
+    def __str__(self):
+        return '%s: %s %s' % (self.idtipo, self.tiponombre, self.tipodescripcion)
 
 
-class Vacuna(models.Model):
-    idvacuna = models.IntegerField(db_column='idVacuna', primary_key=True)  # Field name made lowercase.
-    nombrevacuna = models.CharField(db_column='nombreVacuna', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    fabricantevacuna = models.CharField(db_column='fabricanteVacuna', max_length=45, blank=True, null=True)  # Field name made lowercase.
-    descripcionvacuna = models.CharField(db_column='descripcionVacuna', max_length=100, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'vacuna'
-
-
-class Veterinario(models.Model):
-    idveterinario = models.IntegerField(db_column='idVeterinario', primary_key=True)  # Field name made lowercase.
-    veterinariopersona = models.ForeignKey(Persona, models.DO_NOTHING, db_column='veterinarioPersona')  # Field name made lowercase.
-    veterinariolocal = models.ForeignKey(Local, models.DO_NOTHING, db_column='veterinarioLocal')  # Field name made lowercase.
-    veterinariotitulo = models.CharField(db_column='veterinarioTitulo', max_length=45, blank=True, null=True)  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'veterinario'
-        unique_together = (('idveterinario', 'veterinariopersona', 'veterinariolocal'),)
+class Mascota(models.Model):
+    idmascota = models.AutoField(primary_key=True)
+    idusuario = models.ForeignKey(Usuario,on_delete=models.CASCADE)
+    idraza = models.ForeignKey(Raza, on_delete=models.CASCADE)
+    idtipo = models.TipoMascota(TipoMascota, on_delete=models.CASCADE)
+    mascotanombre = models.CharField(max_length=100)
+    mascotaedad = models.IntegerField(default=None)
+    mascotasexo = models.CharField(max_length=10)
+    mascotafoto = models.CharField(max_length=300)
+        
+    def __str__(self):
+        return '%s: %s %s %s %s %s %s %s' % (self.idmascota, self.idusuario, self.idraza, self.idtipo, self.mascotanombre, self.mascotaedad, self.mascotasexo, self.mascotafoto)
 
 
-class VisitaVeterinario(models.Model):
-    idvisita_veterinario = models.IntegerField(db_column='idVisita_Veterinario', primary_key=True)  # Field name made lowercase.
-    visitamascota = models.ForeignKey(Mascota, models.DO_NOTHING, db_column='visitaMascota')  # Field name made lowercase.
-    visitaveterinario = models.ForeignKey(Veterinario, models.DO_NOTHING, db_column='visitaVeterinario')  # Field name made lowercase.
-    fechavisita = models.DateTimeField(db_column='fechaVisita')  # Field name made lowercase.
-    descripcionvisita = models.CharField(db_column='descripcionVisita', max_length=100, blank=True, null=True)  # Field name made lowercase.
+class Local(models.Model):
+    idlocal = models.AutoField(primary_key=True)
+    localnombre = models.CharField(max_length=20)
+    localdireccion = models.CharField(max_length=50)
+    localtelefono = models.CharField(max_length=10)
+    localmail = models.CharField(max_length=20)
+    localPropietario = models.CharField(max_length=50)
+    locallike = models.IntegerField(default=None)
+    localfoto = models.CharField(max_length=300)
 
-    class Meta:
-        managed = False
-        db_table = 'visita_veterinario'
-        unique_together = (('idvisita_veterinario', 'visitamascota', 'fechavisita', 'visitaveterinario'),)
+    def __str__(self):
+        return '%s: %s %s %s %s %s %s %s' % (self.idlocal, self.localnombre, self.localdireccion, self.localtelefono, self.localmail, self.localPropietario, self.locallike, self.localfoto)
+
+class Recomendar(models.Model):
+    idrecomendar = models.AutoField(primary_key=True)
+    idlocal = models.ForeignKey(Local, on_delete=CASCADE)
+    idusuario = models.ForeignKey(Usuario,on_delete=CASCADE)
+    recomendarfecha = models.DateField(default=None)
+    recomendardetalle = models.CharField(max_length=200)
+
+    def __str__(self):
+        return '%s: %s %s %s %s' % (self.idrecomendar, self.idlocal, self.idusuario, self.recomendarfecha, self.recomendardetalle)
+
+
+class Cuidado(models.Model):
+    idcuidado = models.AutoField(primary_key=True)
+    idpusuario = models.ForeignKey(Usuario, on_delete=CASCADE)
+    cuidadofecha = models.DateField(default=None)
+    cuidadodetalle = models.CharField(max_length=300)
+    cuidadolike = models.IntegerField(default=None)
+
+    def __str__(self):
+        return '%s: %s %s %s %s' % (self.idcuidado, self.idusuario, self.cuidadofecha, self.cuidadodetalle, self.cuidadofecha)
+
+
+class Planificacion(models.Model):
+    idplanificacion = models.AutoField(primary_key=True)
+    idUsuario = models.ForeignKey (Usuario, on_delete=CASCADE)
+    idmascota = models.ForeingKey (Mascota, on_delete= CASCADE)
+    planificacionfecha = models.DateField(default=None)
+    planificaciondescripcion = models.CharField(max_length=150)
+
+    def __str__(self):
+        return '%s: %s %s %s %s' % (self.idplanificacion, self.idusuario, self.idmascota, self.planificacionfecha, self.planificaciondescripcion)
