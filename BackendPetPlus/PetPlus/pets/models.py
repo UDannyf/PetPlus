@@ -11,7 +11,7 @@ class Rol(models.Model):
     roldescripcion = models.CharField(max_length=50)
 
     def __str__(self):
-        return '%s: %s' % (self.id_rol, self.tipo)
+        return '%s: %s' % (self.idrol, self.roltipo)
 
 class Usuario(models.Model):
     idusuario= models.AutoField(primary_key=True)
